@@ -2,7 +2,7 @@
 
 ## Get Started:
 
-1. Clone repo
+1. Склонируйте репозиторий:
    ```bash
    git clone https://github.com/msrbl/docker-practical-rife
    cd docker-practical-rife 
@@ -23,11 +23,10 @@
     ```bash
     docker run -d --name rife-server -v /app/train_log:/train_log -v /video_data:/video_data -p 5000:5000 practical_rife_server
 
-6. Загружаем веса из локальной машины в папку хоста:
+6. Загрузите веса из локальной машины в папку хоста:
     ```bash
-    docker ./train_log container_id:/app/train_log
+    docker cp ./train_log container_id:/app/train_log
 
-7. Отправляем запрос из терминала:
-    Пример:
+7. Отправьте запрос из терминала PowerShell к docker. Пример:
     ```bash
     Invoke-WebRequest -Uri "http://localhost:5000/interpolate" -Method POST -Headers @{"Content-Type"="application/json" -Body '{"input_video": "Snakes15FPS360p.mp4", "output_video": "output_video.mp4", "multi": 4}'
