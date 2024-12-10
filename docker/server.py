@@ -1,16 +1,20 @@
 from flask import Flask, request, jsonify
 import os
 import subprocess
+import logging
 
 app = Flask(__name__)
 
 # Пути для volumes
-WEIGHTS_PATH = "/weights"
 VIDEOS_PATH = "/video_data"
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 @app.route('/interpolate', methods=['POST'])
 def interpolate():
     try:
+        logger.info("Starting video interpolation...")
         # Получение данных из запроса
         input_video = request.json.get('input_video')
         output_video = request.json.get('output_video')
@@ -28,7 +32,7 @@ def interpolate():
 
         # Команда для запуска inference
         command = [
-            "python", "inference_video.py",
+            "python3", "inference_video.py",
             "--video", input_path,
             "--output", output_path,
             "--multi", str(scale),
@@ -38,7 +42,8 @@ def interpolate():
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:
             return jsonify({"error": result.stderr}), 500
-
+        
+        logger.info("Interpolation completed successfully.")
         return jsonify({"status": "success", "output": output_path})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
