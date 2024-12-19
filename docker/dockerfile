@@ -1,6 +1,6 @@
 FROM python:3.11-slim AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget build-essential gcc libffi-dev && \
+    wget gcc libffi-dev && \
     rm -rf /var/lib/apt/lists/*
 
 FROM nvidia/cuda:12.4.0-runtime-ubuntu20.04 AS runtime
@@ -10,22 +10,19 @@ ENV TZ=Etc/UTC
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip ffmpeg libgl1 libsm6 libxext6 libglvnd-dev libxrender-dev && \
-    apt clean && rm -rf /var/lib/apt/lists/*    
+    apt-get clean && rm -rf /var/lib/apt/lists/*    
 
 COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
 
-WORKDIR /app
+WORKDIR /app/rife
 
 RUN git clone https://github.com/hzwer/Practical-RIFE.git .
 
-COPY Snakes15FPS360p.mp4 /video_data/
-COPY server.py /app/
-COPY train_log /app/train_log/
-COPY req.txt /app/
+COPY server.py req.txt /app/rife/
+COPY /train_log/ /app/rife/
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r req.txt && \
-    pip install --no-cache-dir flask
+    pip install --no-cache-dir -r req.txt
 
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
@@ -34,4 +31,4 @@ ENV FLASK_ENV=production
 
 EXPOSE 5000
 
-CMD ["python3", "/app/server.py"]
+CMD ["python3", "/app/rife/server.py"]
