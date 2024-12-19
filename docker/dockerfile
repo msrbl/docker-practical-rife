@@ -19,7 +19,7 @@ WORKDIR /app/rife
 RUN git clone https://github.com/hzwer/Practical-RIFE.git .
 
 COPY server.py req.txt /app/rife/
-COPY /train_log/ /app/rife/
+COPY ./train_log/ /app/rife/train_log/
 
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r req.txt
